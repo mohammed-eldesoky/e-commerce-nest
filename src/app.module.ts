@@ -22,22 +22,7 @@ import { Admin, adminSchema, Seller, sellerSchema, User, userSchema } from './mo
         uri: configService.get('db').url,
       }),
     }),
-    MongooseModule.forFeature([
-      {
-        name: User.name,
-        schema: userSchema,
-        discriminators: [
-          {
-            name: Admin.name,
-            schema: adminSchema,
-          },
-          {
-            name: Seller.name,
-            schema: sellerSchema,
-          }
-        ],
-      },
-    ]),
+  
     AuthModule,
     BrandModule,
     ProductModule,
