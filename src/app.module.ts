@@ -8,7 +8,6 @@ import { ProductModule } from './modules/product/product.module';
 import { CategoryModule } from './modules/category/category.module';
 import devConfig from './config/env/dev.config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Admin, adminSchema, Seller, sellerSchema, User, userSchema } from './models';
 
 @Module({
   imports: [
