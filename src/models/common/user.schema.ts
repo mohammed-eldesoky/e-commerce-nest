@@ -31,6 +31,8 @@ export class User {
 
   @Prop({ type: Date, default: null })
   otpExpiry: Date; 
+    @Prop({ type: String, required: true,})
+    gender:string;
 }
 
 export const userSchema = SchemaFactory.createForClass(User);

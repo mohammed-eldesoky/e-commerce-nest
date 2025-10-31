@@ -19,6 +19,12 @@ export class Customer {
   userName: string;
   email: string;
   password: string; //type =typescript
+  otp: string;
+  otpExpiry: Date;
+  gender: string;
+  isVerified: boolean;
+  @Prop({ type: Date })
+  dob: Date;
 }
 
 export const customerSchema = SchemaFactory.createForClass(Customer);
