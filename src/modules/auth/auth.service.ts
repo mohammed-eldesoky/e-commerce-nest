@@ -3,6 +3,7 @@ import { RegisterDto } from './dto/reister.dto';
 import { Customer } from './entities/auth.entity';
 import { ConfigService } from '@nestjs/config';
 import { CustomerRepository } from '@models/index';
+import { sendMail } from '@common/index';
 
 @Injectable()
 export class AuthService {
@@ -22,7 +23,12 @@ export class AuthService {
     //create customer
     const createdUser = await this.customerRepository.create(customer);
     // send email
-
+    await sendMail({
+      from:'E-Commerce App' ,
+      to: customer.email,
+      subject: 'Confirm Email',
+      html: `<h1>Hello ${customer.userName}, Thank you for registering at our e-commerce</h1>`,
+    });
     const { password, otp, otpExpiry, ...customerObject } = JSON.parse(
       JSON.stringify(createdUser),
     );
