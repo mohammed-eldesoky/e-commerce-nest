@@ -22,6 +22,15 @@ export class User {
   email: string;
   @Prop({ type: String, required: true }) //type = mongoose
   password: string; //type =typescript
+
+   @Prop({ type: Boolean, default: false })
+  isVerified: boolean; 
+
+  @Prop({ type: String, default: null })
+  otp: string; 
+
+  @Prop({ type: Date, default: null })
+  otpExpiry: Date; 
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
