@@ -2,7 +2,9 @@ import { generateOtp } from '@common/index';
 import { RegisterDto } from '../dto/reister.dto';
 import { Customer } from '../entities/auth.entity';
 import * as bcrypt from 'bcrypt';
+import { Injectable } from '@nestjs/common';
 
+@Injectable()
 export class AuthFactory {
   async createCustomer(registerDto: RegisterDto) {
     const customer = new Customer();
