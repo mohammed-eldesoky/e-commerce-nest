@@ -2,6 +2,7 @@ import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/reister.dto';
 import { AuthFactory } from './factory/auth.factory';
+import { VerifyAccountDto } from './dto/verfiy-account.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -22,4 +23,19 @@ export class AuthController {
        data: createdCustomer,
     };
   }
+  //_____________________________________________________________
+
+
+  @Post('/Verify-account')
+  async verifyAccount(@Body() verifyAccountDto: VerifyAccountDto) {
+    await this.authService.verifyAccount(verifyAccountDto);
+
+    return {
+      message: 'Account verified successfully',
+      success: true,
+    
+    };
+}
+
+
 }
