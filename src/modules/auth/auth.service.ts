@@ -7,12 +7,18 @@ import {
 import { Customer } from './entities/auth.entity';
 import { ConfigService } from '@nestjs/config';
 import { CustomerRepository } from '@models/index';
-import { sendMail, TOKEN_TYPES } from '@common/index';
+import {
+  generateOtp,
+  generateOtpExpiryTime,
+  sendMail,
+  TOKEN_TYPES,
+} from '@common/index';
 import { VerifyAccountDto } from './dto/verfiy-account.dto';
 import { LoginDto } from './dto/login.dto';
 import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { TokenRepository } from '@models/token/token.repository';
+import { sendOTPDto } from './dto/send-otp.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -127,5 +133,43 @@ export class AuthService {
       accessToken,
       refreshToken,
     };
+  }
+
+  async sendOtp(sendOtpDto: sendOTPDto) {
+    const { email } = sendOtpDto;
+    //check if customer with email exists
+    const customer = await this.customerRepository.getOne({ email: email });
+    //fail case customer does not exist
+    if (!customer) {
+      throw new NotFoundException('Customer does not exist');
+    }
+    // prevent resend if user is banned
+    if (customer.banUntil && customer.banUntil > new Date()) {
+      const remaining = Math.ceil(
+        (customer.banUntil.getTime() - Date.now()) / 1000,
+      );
+      throw new BadRequestException(
+        `You are temporarily banned. Try again after ${remaining} seconds.`,
+      );
+    }
+
+    //generate otp
+    const otp = generateOtp();
+    const otpExpiryAt = generateOtpExpiryTime(10); // 10 minutes from now
+    //update user
+    await this.customerRepository.update(
+      { email: email },
+      { otp: otp, otpExpiryAt: otpExpiryAt },
+    );
+
+    //send email
+    await sendMail({
+      from: `"E-commerce" <${process.env.EMAIL_USER}>`,
+      to: email,
+      subject: ' Confirm Your Account',
+      html: `<h1>Your OTP :${otp} </h1>
+      <p>OTP is valid for 10 minutes</p>
+      `,
+    });
   }
 }

@@ -36,7 +36,9 @@ export class User {
     gender:string;
     @Prop({type:String,enum:USER_AGENT,default:USER_AGENT.local})
      userAgent: string;
-   
+
+     @Prop({ type: Date})
+     banUntil: Date;
 }
 
 export const userSchema = SchemaFactory.createForClass(User);

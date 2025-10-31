@@ -4,6 +4,7 @@ import { RegisterDto } from './dto/reister.dto';
 import { AuthFactory } from './factory/auth.factory';
 import { VerifyAccountDto } from './dto/verfiy-account.dto';
 import { LoginDto } from './dto/login.dto';
+import { sendOTPDto } from './dto/send-otp.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -51,5 +52,14 @@ const token = await this.authService.login(loginDto);
   };
 }
 
+@Post('/send-otp')
+async sendOtp(@Body() sendOtpDto: sendOTPDto) {
+
+this.authService.sendOtp(sendOtpDto);
+  return {
+    message: 'OTP sent successfully',
+    success: true,
+  };
+}
 
 }

@@ -25,6 +25,7 @@ export class Customer {
   isVerified: boolean;
   @Prop({ type: Date })
   dob: Date;
+  banUntil: Date;
 }
 
 export const customerSchema = SchemaFactory.createForClass(Customer);
