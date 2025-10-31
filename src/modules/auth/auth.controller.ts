@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/reister.dto';
 import { AuthFactory } from './factory/auth.factory';
 import { VerifyAccountDto } from './dto/verfiy-account.dto';
+import { LoginDto } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -35,6 +36,19 @@ export class AuthController {
       success: true,
     
     };
+}
+
+@Post('/login')
+async login(@Body() loginDto: LoginDto) {
+
+const token = await this.authService.login(loginDto);
+  return {
+    message: 'Login successfully',
+    success: true,
+    data:{
+      token
+    }
+  };
 }
 
 

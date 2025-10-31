@@ -2,19 +2,24 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
-import { RegisterDto } from './dto/reister.dto';
 import { Customer } from './entities/auth.entity';
 import { ConfigService } from '@nestjs/config';
 import { CustomerRepository } from '@models/index';
-import { sendMail } from '@common/index';
+import { sendMail, TOKEN_TYPES } from '@common/index';
 import { VerifyAccountDto } from './dto/verfiy-account.dto';
-
+import { LoginDto } from './dto/login.dto';
+import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { TokenRepository } from '@models/token/token.repository';
 @Injectable()
 export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly customerRepository: CustomerRepository,
+    private readonly jwtService: JwtService,
+    private readonly tokenRepo: TokenRepository,
   ) {}
   async register(customer: Customer) {
     //check if customer with email already exists
@@ -71,5 +76,56 @@ export class AuthService {
       { email: email },
       { isVerified: true, $unset: { otp: '', otpExpiry: '' } },
     );
+  }
+
+  async login(loginDto: LoginDto) {
+    const { email, password } = loginDto;
+    //check if customer with email exists
+    const customer = await this.customerRepository.getOne({ email: email });
+    //fail case customer does not exist
+    if (!customer) {
+      throw new UnauthorizedException('invalid credentials');
+    }
+    //check if password matches
+    const match = await bcrypt.compare(password, customer.password);
+    if (!match) {
+      throw new UnauthorizedException('invalid credentials');
+    }
+
+    // generate access & refresh tokens
+    const payload = {
+      id: customer._id,
+      email: customer.email,
+      role: 'customer',
+    };
+
+    const accessToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('token').jwt_secret,
+      expiresIn: '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payload, {
+      secret: this.configService.get('token').jwt_secret,
+      expiresIn: '7d',
+    });
+
+    // save tokens to database
+    (await this.tokenRepo.create({
+      token: accessToken,
+      user: customer._id,
+      type: TOKEN_TYPES.access,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000), // 15 minutes
+    }),
+      await this.tokenRepo.create({
+        token: refreshToken,
+        user: customer._id,
+        type: TOKEN_TYPES.refresh,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      }));
+
+    return {
+      accessToken,
+      refreshToken,
+    };
   }
 }
