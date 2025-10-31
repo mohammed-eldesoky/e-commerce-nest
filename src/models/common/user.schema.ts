@@ -1,5 +1,6 @@
 //user schema
 
+import { USER_AGENT } from '@common/enum';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Types } from 'mongoose';
 
@@ -33,6 +34,9 @@ export class User {
   otpExpiry: Date; 
     @Prop({ type: String, required: true,})
     gender:string;
+    @Prop({type:String,enum:USER_AGENT,default:USER_AGENT.local})
+     userAgent: string;
+   
 }
 
 export const userSchema = SchemaFactory.createForClass(User);

@@ -1,4 +1,4 @@
-import { generateOtp } from '@common/index';
+import { GENDER_TYPES, generateOtp } from '@common/index';
 import { RegisterDto } from '../dto/reister.dto';
 import { Customer } from '../entities/auth.entity';
 import * as bcrypt from 'bcrypt';
@@ -16,7 +16,7 @@ export class AuthFactory {
     customer.otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
     customer.isVerified = false;
     customer.dob = registerDto.dob;
-    customer.gender = registerDto.gender;
+    customer.gender = registerDto.gender || GENDER_TYPES.male;
 
     return customer;
   }
