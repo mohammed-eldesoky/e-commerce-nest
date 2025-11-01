@@ -7,6 +7,7 @@ import { JwtService } from '@nestjs/jwt';
 import { TokenRepository } from '@models/token/token.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Token, TokenSchema } from '@models/token/token.schema';
+import { GoogleAuth } from 'google-auth-library';
 
 
 @Module({
@@ -14,6 +15,6 @@ import { Token, TokenSchema } from '@models/token/token.schema';
     MongooseModule.forFeature([{name:Token.name,schema:TokenSchema}])
   ],
   controllers: [AuthController],
-  providers: [AuthService,AuthFactory,JwtService,TokenRepository],
+  providers: [AuthService,AuthFactory,JwtService,TokenRepository,GoogleAuth],
 })
 export class AuthModule {}

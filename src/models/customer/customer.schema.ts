@@ -23,9 +23,11 @@ export class Customer {
   otpExpiry?: Date;
   gender: string;
   isVerified: boolean;
-  @Prop({ type: Date })
+  @Prop({ type: Date, required: false })
   dob: Date;
   banUntil: Date;
+  userAgent: string;
 }
 
 export const customerSchema = SchemaFactory.createForClass(Customer);
+ 

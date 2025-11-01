@@ -6,6 +6,7 @@ import { VerifyAccountDto } from './dto/verfiy-account.dto';
 import { LoginDto } from './dto/login.dto';
 import { sendOTPDto } from './dto/send-otp.dto';
 import { ForgetPassDto } from './dto/forgetpass.dto';
+import { LoginGoogleDto } from './dto/login-google.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,11 +24,10 @@ export class AuthController {
     return {
       message: 'Customer registered successfully',
       success: true,
-       data: createdCustomer,
+      data: createdCustomer,
     };
   }
   //_____________________________________________________________
-
 
   @Post('/Verify-account')
   async verifyAccount(@Body() verifyAccountDto: VerifyAccountDto) {
@@ -36,40 +36,52 @@ export class AuthController {
     return {
       message: 'Account verified successfully',
       success: true,
-    
     };
-}
+  }
+  //_____________________________________________________________
 
-@Post('/login')
-async login(@Body() loginDto: LoginDto) {
+  @Post('/login')
+  async login(@Body() loginDto: LoginDto) {
+    const token = await this.authService.login(loginDto);
+    return {
+      message: 'Login successfully',
+      success: true,
+      data: {
+        token,
+      },
+    };
+  }
+  //_____________________________________________________________
 
-const token = await this.authService.login(loginDto);
-  return {
-    message: 'Login successfully',
-    success: true,
-    data:{
-      token
-    }
-  };
-}
+  @Post('/send-otp')
+  async sendOtp(@Body() sendOtpDto: sendOTPDto) {
+    this.authService.sendOtp(sendOtpDto);
+    return {
+      message: 'OTP sent successfully',
+      success: true,
+    };
+  }
+  //_____________________________________________________________
 
-@Post('/send-otp')
-async sendOtp(@Body() sendOtpDto: sendOTPDto) {
+  @Put('/forget-password')
+  async forgetPassword(@Body() forgetPassDto: ForgetPassDto) {
+    this.authService.forgetPassword(forgetPassDto);
+    return {
+      message: 'Password changed successfully',
+      success: true,
+    };
+  }
+  //_____________________________________________________________
 
-this.authService.sendOtp(sendOtpDto);
-  return {
-    message: 'OTP sent successfully',
-    success: true,
-  };
-}
-
-@Put('/forget-password')
-async forgetPassword(@Body() forgetPassDto: ForgetPassDto) {
-
-this.authService.forgetPassword(forgetPassDto);
-  return {
-    message: 'Password changed successfully',
-    success: true,
-  };
-} 
+  @Post('/google-login')
+  async LoginWithgoogle(@Body() loginGoogleDto: LoginGoogleDto) {
+    const tokenData = await this.authService.LoginWithgoogle(loginGoogleDto);
+    return {
+      message: 'Login Login With google successfully',
+      success: true,
+      data: {
+        tokenData,
+      },
+    };
+  }
 }

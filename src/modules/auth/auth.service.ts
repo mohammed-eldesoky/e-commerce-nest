@@ -12,6 +12,7 @@ import {
   generateOtpExpiryTime,
   sendMail,
   TOKEN_TYPES,
+  USER_AGENT,
 } from '@common/index';
 import { VerifyAccountDto } from './dto/verfiy-account.dto';
 import { LoginDto } from './dto/login.dto';
@@ -21,6 +22,8 @@ import { TokenRepository } from '@models/token/token.repository';
 import { sendOTPDto } from './dto/send-otp.dto';
 import { ForgetPassDto } from './dto/forgetpass.dto';
 import { Token } from '@models/token/token.schema';
+import { LoginGoogleDto } from './dto/login-google.dto';
+import { GoogleAuth, OAuth2Client } from 'google-auth-library';
 @Injectable()
 export class AuthService {
   constructor(
@@ -200,15 +203,85 @@ export class AuthService {
       throw new BadRequestException('OTP has expired');
     }
     //update password
-   // update password + unset OTP fields
-  await this.customerRepository.update(
-    { _id: customer._id },
-    { 
-      $set: { password: await bcrypt.hash(newPassword, 10) },
-      $unset: { otp: '', otpExpiry: '' },
-    },
-  );
+    // update password + unset OTP fields
+    await this.customerRepository.update(
+      { _id: customer._id },
+      {
+        $set: { password: await bcrypt.hash(newPassword, 10) },
+        $unset: { otp: '', otpExpiry: '' },
+      },
+    );
     // destroy tokens
     await this.tokenRepo.deleteMany({ user: customer._id });
+  }
+
+  //________________________Login With google____________________________________
+
+  async LoginWithgoogle(loginGoogleDto: LoginGoogleDto) {
+    //get idToken from dto
+    const { idToken } = loginGoogleDto;
+    // 2- verify the id token and get user info from google
+    const client = new OAuth2Client(process.env.TOKEN_GOOGLE);
+    const ticket = await client.verifyIdToken({ idToken });
+    const payload = ticket.getPayload(); //{email, name, picture}
+    if (!payload) {
+      throw new UnauthorizedException('Invalid Google token');
+    }
+    // check if user with email exists in our db
+    let customer = await this.customerRepository.getOne({
+      email: payload.email,
+    });
+
+    //  If user does not exist, create a new user
+    if (!customer) {
+      // if not, create a new user
+      customer = (await this.customerRepository.create({
+        email: payload.email,
+        userName: payload.name,
+        userAgent: USER_AGENT.google,
+        isVerified: true, // google verified email
+      })) as any;
+    }
+    // generate access & refresh tokens
+    // generate access & refresh tokens
+    const payloadToken = {
+      id: customer!._id,
+      email: customer!.email,
+      role: 'customer',
+    };
+
+    const accessToken = this.jwtService.sign(payloadToken, {
+      secret: this.configService.get('token').jwt_secret,
+      expiresIn: '15m',
+    });
+
+    const refreshToken = this.jwtService.sign(payloadToken, {
+      secret: this.configService.get('token').jwt_secret,
+      expiresIn: '7d',
+    });
+    // save tokens to database
+    await this.tokenRepo.create({
+      token: accessToken,
+      user: customer!._id,
+      type: TOKEN_TYPES.access,
+      expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+    });
+
+    await this.tokenRepo.create({
+      token: refreshToken,
+      user: customer!._id,
+      type: TOKEN_TYPES.refresh,
+      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+    });
+
+    return {
+      accessToken,
+      refreshToken,
+      user: {
+        id: customer!._id,
+        email: customer!.email,
+        userName: customer!.userName,
+      },
+    };
   }
 }

@@ -6,7 +6,7 @@ import { Types } from 'mongoose';
 
 @Schema({
   timestamps: true,
-  discriminatorKey:'role',
+  discriminatorKey: 'role',
   toJSON: {
     virtuals: true,
   },
@@ -16,29 +16,43 @@ import { Types } from 'mongoose';
 }) //2-options here
 //1-defention of user schema
 export class User {
-   readonly _id :Types.ObjectId;
+  readonly _id: Types.ObjectId;
   @Prop({ type: String, required: true })
   userName: string;
   @Prop({ type: String, required: true, unique: true })
   email: string;
-  @Prop({ type: String, required: true }) //type = mongoose
-  password: string; //type =typescript
+  @Prop({ type: String, required: false }) //type = mongoose
+  password?: string; //type =typescript
 
-   @Prop({ type: Boolean, default: false })
-  isVerified: boolean; 
+  @Prop({ type: Boolean, default: false })
+  isVerified: boolean;
 
   @Prop({ type: String, default: null })
-  otp: string; 
+  otp: string;
 
   @Prop({ type: Date, default: null })
-  otpExpiry: Date; 
-    @Prop({ type: String, required: true,})
-    gender:string;
-    @Prop({type:String,enum:USER_AGENT,default:USER_AGENT.local})
-     userAgent: string;
+  otpExpiry: Date;
+  @Prop({ type: String, required: false })
+  gender?: string;
+  @Prop({ type: String, enum: USER_AGENT, default: USER_AGENT.local })
+  userAgent: string;
 
-     @Prop({ type: Date})
-     banUntil: Date;
+  @Prop({ type: Date })
+  banUntil: Date;
 }
 
 export const userSchema = SchemaFactory.createForClass(User);
+
+userSchema.path('password').validate({
+  validator: function (this: any) {
+    return this.userAgent === USER_AGENT.google || !!this.password;
+  },
+  message: 'Password is required for non-Google users',
+});
+
+userSchema.path('gender').validate({
+  validator: function (this: any) {
+    return this.userAgent === USER_AGENT.google || !!this.gender;
+  },
+  message: 'Gender is required for non-Google users',
+});
