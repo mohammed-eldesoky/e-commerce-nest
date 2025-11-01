@@ -1,4 +1,5 @@
-import { IsDate, IsEmail, IsNotEmpty, IsString, MaxLength, MinLength } from "class-validator";
+import { USER_AGENT } from "@common/enum";
+import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
 
 
 export class RegisterDto {
@@ -24,5 +25,9 @@ export class RegisterDto {
   @IsString()
   @IsNotEmpty()
   gender: string;
+
+    @IsString()
+  @IsOptional()
+  userAgent?: string = USER_AGENT.local; 
   
 }

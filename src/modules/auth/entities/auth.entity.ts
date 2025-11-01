@@ -4,7 +4,7 @@ export class Customer {
     readonly _id: Types.ObjectId;
     userName: string;
     email: string;
-    password: string; 
+    password?: string; 
     otp: string;
     otpExpiry: Date;
     gender: string;

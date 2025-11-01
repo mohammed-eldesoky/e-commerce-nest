@@ -1,8 +1,8 @@
-import { GENDER_TYPES, generateOtp } from '@common/index';
+import { GENDER_TYPES, generateOtp, USER_AGENT } from '@common/index';
 import { RegisterDto } from '../dto/reister.dto';
 import { Customer } from '../entities/auth.entity';
 import * as bcrypt from 'bcrypt';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 
 @Injectable()
 export class AuthFactory {
@@ -11,7 +11,15 @@ export class AuthFactory {
 
     customer.userName = registerDto.userName;
     customer.email = registerDto.email;
-    customer.password = await bcrypt.hash(registerDto.password, 10);
+    if (registerDto.userAgent === USER_AGENT.google) {
+     
+      customer.password = undefined;
+    } else {
+      if (!registerDto.password) {
+        throw new BadRequestException('Password is required for local users');
+      }
+      customer.password = await bcrypt.hash(registerDto.password, 10);
+    }
     customer.otp = generateOtp();
     customer.otpExpiry = new Date(Date.now() + 5 * 60 * 1000);
     customer.isVerified = false;
