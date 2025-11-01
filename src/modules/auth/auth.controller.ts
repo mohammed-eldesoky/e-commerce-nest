@@ -77,7 +77,20 @@ export class AuthController {
   async LoginWithgoogle(@Body() loginGoogleDto: LoginGoogleDto) {
     const tokenData = await this.authService.LoginWithgoogle(loginGoogleDto);
     return {
-      message: 'Login Login With google successfully',
+      message: 'Login With google successfully',
+      success: true,
+      data: {
+        tokenData,
+      },
+    };
+  }
+
+  //_____________________________________________________________
+   @Post('/google-signup') 
+  async SignUpWithgoogle(@Body() loginGoogleDto: LoginGoogleDto) {
+    const tokenData = await this.authService.signupWithGoogle(loginGoogleDto);
+    return {
+      message: 'Signup With google successfully',
       success: true,
       data: {
         tokenData,

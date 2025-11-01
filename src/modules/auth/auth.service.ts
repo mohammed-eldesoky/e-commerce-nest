@@ -284,4 +284,78 @@ export class AuthService {
       },
     };
   }
+
+   //________________________SignUp With google____________________________________
+
+async signupWithGoogle(googleSignupDto: LoginGoogleDto) {
+  const { idToken } = googleSignupDto;
+
+  const client = new OAuth2Client(process.env.TOKEN_GOOGLE);
+  const ticket = await client.verifyIdToken({ idToken });
+  const payload = ticket.getPayload();
+
+  if (!payload || !payload.email) {
+    throw new UnauthorizedException('Invalid Google token');
+  }
+
+  // Check if user already exists
+  let customer: any = await this.customerRepository.getOne({ email: payload.email });
+
+  if (customer) {
+    throw new BadRequestException('User already registered with this email');
+  }
+
+  // Create a new customer
+  customer = await this.customerRepository.create({
+    email: payload.email,
+    userName: payload.name,
+    userAgent: USER_AGENT.google,
+    isVerified: true, // Google accounts are verified by default
+    gender: 'male',  // default if not provided by Google
+  });
+
+  // Generate tokens
+  const payloadToken = {
+    id: customer!._id,
+    email: customer!.email,
+    role: 'customer',
+  };
+
+  const accessToken = this.jwtService.sign(payloadToken, {
+    secret: this.configService.get('token').jwt_secret,
+    expiresIn: '15m',
+  });
+
+  const refreshToken = this.jwtService.sign(payloadToken, {
+    secret: this.configService.get('token').jwt_secret,
+    expiresIn: '7d',
+  });
+
+  // Save tokens in DB
+  await this.tokenRepo.create({
+    token: accessToken,
+    user: customer!._id,
+    type: TOKEN_TYPES.access,
+    expiresAt: new Date(Date.now() + 15 * 60 * 1000),
+  });
+
+  await this.tokenRepo.create({
+    token: refreshToken,
+    user: customer!._id,
+    type: TOKEN_TYPES.refresh,
+    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+  });
+
+  return {
+    accessToken,
+    refreshToken,
+    user: {
+      id: customer!._id,
+      email: customer!.email,
+      userName: customer!.userName,
+    },
+  };
+}
+
+
 }
