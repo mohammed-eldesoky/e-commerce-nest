@@ -1,10 +1,11 @@
-import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Put } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/reister.dto';
 import { AuthFactory } from './factory/auth.factory';
 import { VerifyAccountDto } from './dto/verfiy-account.dto';
 import { LoginDto } from './dto/login.dto';
 import { sendOTPDto } from './dto/send-otp.dto';
+import { ForgetPassDto } from './dto/forgetpass.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -62,4 +63,13 @@ this.authService.sendOtp(sendOtpDto);
   };
 }
 
+@Put('/forget-password')
+async forgetPassword(@Body() forgetPassDto: ForgetPassDto) {
+
+this.authService.forgetPassword(forgetPassDto);
+  return {
+    message: 'Password changed successfully',
+    success: true,
+  };
+} 
 }

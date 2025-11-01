@@ -19,6 +19,8 @@ import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { TokenRepository } from '@models/token/token.repository';
 import { sendOTPDto } from './dto/send-otp.dto';
+import { ForgetPassDto } from './dto/forgetpass.dto';
+import { Token } from '@models/token/token.schema';
 @Injectable()
 export class AuthService {
   constructor(
@@ -52,6 +54,7 @@ export class AuthService {
     return customerObject;
   }
 
+  //__________________________verifyAccount___________________________________
   async verifyAccount(verifyAccountDto: VerifyAccountDto) {
     const { email, otp } = verifyAccountDto;
     //check if customer with email exists
@@ -84,6 +87,7 @@ export class AuthService {
     );
   }
 
+  //__________________________login___________________________________
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
     //check if customer with email exists
@@ -135,6 +139,7 @@ export class AuthService {
     };
   }
 
+  //___________________________sendOtp__________________________________
   async sendOtp(sendOtpDto: sendOTPDto) {
     const { email } = sendOtpDto;
     //check if customer with email exists
@@ -171,5 +176,39 @@ export class AuthService {
       <p>OTP is valid for 10 minutes</p>
       `,
     });
+  }
+
+  //_________________________forgetPassword____________________________________
+  async forgetPassword(forgetPassDto: ForgetPassDto) {
+    const { email, otp, newPassword } = forgetPassDto;
+    //check if customer with email exists
+
+    const customer = await this.customerRepository.getOne({ email: email });
+    //fail case customer does not exist
+    if (!customer) {
+      throw new NotFoundException('Customer does not exist');
+    }
+
+    // check if otp matches
+    if (customer.otp !== otp) {
+      throw new BadRequestException('Invalid OTP');
+    }
+
+    // check if otp has expired
+
+    if (!customer.otpExpiry || customer.otpExpiry.getTime() < Date.now()) {
+      throw new BadRequestException('OTP has expired');
+    }
+    //update password
+   // update password + unset OTP fields
+  await this.customerRepository.update(
+    { _id: customer._id },
+    { 
+      $set: { password: await bcrypt.hash(newPassword, 10) },
+      $unset: { otp: '', otpExpiry: '' },
+    },
+  );
+    // destroy tokens
+    await this.tokenRepo.deleteMany({ user: customer._id });
   }
 }

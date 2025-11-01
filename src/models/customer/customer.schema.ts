@@ -19,8 +19,8 @@ export class Customer {
   userName: string;
   email: string;
   password: string; //type =typescript
-  otp: string;
-  otpExpiry: Date;
+  otp?: string;
+  otpExpiry?: Date;
   gender: string;
   isVerified: boolean;
   @Prop({ type: Date })

@@ -67,6 +67,9 @@ public  async updateMany(
   return this.model.updateMany(filter, update, option);
 }
   //________________________________________________________
+async deleteMany(filter: RootFilterQuery<T>): Promise<any> {
+  return this.model.deleteMany(filter);
+}
 
 
 }
