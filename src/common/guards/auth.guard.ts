@@ -4,9 +4,11 @@ import {
   CanActivate,
   ExecutionContext,
   NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
@@ -18,7 +20,11 @@ export class AuthGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const { authorization } = request.headers;
-    //verify token
+    if (!authorization) {
+      throw new UnauthorizedException('Authorization header missing');
+    }
+
+    // verify token
     const payload = this.jwtService.verify<{
       _id: string;
       email: string;
@@ -27,12 +33,12 @@ export class AuthGuard implements CanActivate {
       secret: this.configService.get('token').jwt_secret,
     });
     // check if payload exist
-    const customerExist = await this.customerRepo.getOne({ _id: payload._id });
+    const customerExist = await this.customerRepo.getOne({ _id: new Types.ObjectId(payload._id), });
     // fail case customer does not exist
     if (!customerExist) {
       throw new NotFoundException('user does not exist');
     }
     request.user = customerExist;
-    return true;// simulate next()
+    return true; // simulate next()
   }
 }

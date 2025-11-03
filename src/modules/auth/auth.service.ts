@@ -107,7 +107,7 @@ export class AuthService {
 
     // generate access & refresh tokens
     const payload = {
-      id: customer._id,
+      _id: customer._id,
       email: customer.email,
       role: 'customer',
     };
