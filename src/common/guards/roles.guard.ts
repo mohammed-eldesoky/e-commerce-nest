@@ -13,7 +13,12 @@ export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const allowedRoles = this.reflector.get(Roles, context.getHandler());
+    const allowedRoles = this.reflector.getAll(Roles, [context.getHandler(), context.getClass()]);
+    const publicRole= this.reflector.get('PUBLIC', context.getHandler());
+// if  public role do not check role pass 
+    if (publicRole) {
+      return true;
+    }
     if (!allowedRoles.includes(request.user.role)) {
       throw new UnauthorizedException('not allowed');
     }
