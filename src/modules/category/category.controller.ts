@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { CategoryService } from './category.service';
 import { CreateCategoryDto } from './dto/create-category.dto';
@@ -16,7 +17,6 @@ import { Auth } from '@common/decorators/auth.decorator';
 
 @Controller('category')
 @Auth(['Admin'])
-
 export class CategoryController {
   constructor(
     private readonly categoryService: CategoryService,
@@ -51,12 +51,24 @@ export class CategoryController {
     return this.categoryService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
+  @Put(':id')
+  async update(
     @Param('id') id: string,
     @Body() updateCategoryDto: UpdateCategoryDto,
+    @User() user: any,
   ) {
-    return this.categoryService.update(+id, updateCategoryDto);
+    const category = await this.categoryFactory.updateCategory(
+      id,
+      updateCategoryDto,
+      user
+    );
+    const updatedCategory = await this.categoryService.update(id, category);
+
+    return {
+      message: 'Category updated successfully',
+      success: true,
+      category: updatedCategory,
+    };
   }
 
   @Delete(':id')

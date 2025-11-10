@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { Customer } from './entities/auth.entity';
 import { ConfigService } from '@nestjs/config';
-import { CustomerRepository } from '@models/index';
+import { CustomerRepository, UserRepository } from '@models/index';
 import {
   generateOtp,
   generateOtpExpiryTime,
@@ -29,6 +29,7 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly customerRepository: CustomerRepository,
+     private readonly  userRepository: UserRepository,
     private readonly jwtService: JwtService,
     private readonly tokenRepo: TokenRepository,
   ) {}
@@ -94,13 +95,13 @@ export class AuthService {
   async login(loginDto: LoginDto) {
     const { email, password } = loginDto;
     //check if customer with email exists
-    const customer = await this.customerRepository.getOne({ email: email });
+    const customer = await this.userRepository.getOne({ email: email });
     //fail case customer does not exist
     if (!customer) {
       throw new UnauthorizedException('invalid credentials');
     }
     //check if password matches
-    const match = await bcrypt.compare(password, customer.password);
+    const match = await bcrypt.compare(password, customer?.password||'nngf');
     if (!match) {
       throw new UnauthorizedException('invalid credentials');
     }

@@ -5,5 +5,6 @@ export class Category {
     name: string;
     slug: string;
     createdBy: Types.ObjectId;
+    updatedBy: Types.ObjectId;
     logo: object;
 }

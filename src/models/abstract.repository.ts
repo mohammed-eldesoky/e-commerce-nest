@@ -44,11 +44,11 @@ export class AbstractRepository<T> {
   }
   //________________________________________________________
   async update(
-    filter: RootFilterQuery<T>,
-    update: UpdateQuery<T>,
-    option?: MongooseUpdateQueryOptions<T>
+    filter: FilterQuery<T>,
+    update?: UpdateQuery<T>,
+    option?: QueryOptions<T>
   ) {
-    await this.model.updateOne(filter, update, option);
+    await this.model.findOneAndUpdate(filter, update, option);
   }
   //________________________________________________________
   async delete(filter: RootFilterQuery<T>) {

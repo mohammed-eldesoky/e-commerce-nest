@@ -29,8 +29,14 @@ export class CategoryService {
     return `This action returns a #${id} category`;
   }
 
-  update(id: number, updateCategoryDto: UpdateCategoryDto) {
-    return `This action updates a #${id} category`;
+async update(id: string, category:Category) {
+const categoryExist = await this.categoryrepo.getOne({slug:category.slug,_id:{$ne:id}})
+
+if (categoryExist) {
+  throw new ConflictException('Category already exist');
+}
+
+return await this.categoryrepo.update({_id:id},category,{new:true})
   }
 
   remove(id: number) {
