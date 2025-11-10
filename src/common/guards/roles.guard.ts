@@ -1,4 +1,4 @@
-import { Roles } from '@common/decorators/roles.decorator';
+import { ROLES, Roles } from '@common/decorators/roles.decorator';
 import {
   Injectable,
   CanActivate,
@@ -13,7 +13,7 @@ export class RolesGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
   canActivate(context: ExecutionContext): boolean {
     const request = context.switchToHttp().getRequest();
-    const allowedRoles = this.reflector.getAll(Roles, [context.getHandler(), context.getClass()]);
+    const allowedRoles = this.reflector.getAll(ROLES, [context.getHandler(), context.getClass()]);
     const publicRole= this.reflector.get('PUBLIC', context.getHandler());
 // if  public role do not check role pass 
     if (publicRole) {
