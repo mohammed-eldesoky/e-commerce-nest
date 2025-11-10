@@ -25,8 +25,12 @@ export class CategoryService {
     return `This action returns all category`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} category`;
+  async findOne(id: string) {
+  const category = await this.categoryrepo.getOne({_id:id},{},{populate:[{path:'createdBy'},{path:'updatedBy'}]})
+  if (!category) {
+    throw new ConflictException('Category not found');
+  }
+  return category;
   }
 
 async update(id: string, category:Category) {

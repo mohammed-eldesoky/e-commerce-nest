@@ -14,6 +14,7 @@ import { UpdateCategoryDto } from './dto/update-category.dto';
 import { CategoryFactory } from './factory';
 import { User } from '@common/decorators/user.decorator';
 import { Auth } from '@common/decorators/auth.decorator';
+import { Public } from '@common/index';
 
 @Controller('category')
 @Auth(['Admin'])
@@ -46,9 +47,14 @@ export class CategoryController {
     return this.categoryService.findAll();
   }
 
+  @Public()
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.categoryService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    const category = await this.categoryService.findOne(id);
+    return {
+      success: true,
+      category: category,
+    };
   }
 
   @Put(':id')
@@ -60,7 +66,7 @@ export class CategoryController {
     const category = await this.categoryFactory.updateCategory(
       id,
       updateCategoryDto,
-      user
+      user,
     );
     const updatedCategory = await this.categoryService.update(id, category);
 
