@@ -11,3 +11,5 @@ export * from "./category/category.schema";
 export * from "./category/category.repository";
 export * from "./common/user.repository";
 export * from "./common/user.schema";
+export * from "./brand/brand.schema";
+export * from "./brand/brand.repository";
