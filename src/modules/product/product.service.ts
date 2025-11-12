@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { ProductRepository } from '@models/index';
+import { Product } from './entities/product.entity';
 
 @Injectable()
 export class ProductService {
-  create(createProductDto: CreateProductDto) {
-    return 'This action adds a new product';
+  constructor(private readonly productrepo: ProductRepository) {}
+  create(product:Product) {
+// check if product exist>> if category and brand exist
   }
 
   findAll() {
