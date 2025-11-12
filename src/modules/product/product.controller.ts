@@ -13,6 +13,7 @@ import { UpdateProductDto } from './dto/update-product.dto';
 import { Auth } from '@common/decorators/auth.decorator';
 import { ProductFactory } from './factory';
 import { User } from '@common/decorators/user.decorator';
+import { message } from '@common/index';
 
 @Controller('product')
 @Auth(['Admin', 'Seller'])
@@ -26,6 +27,11 @@ export class ProductController {
   async create(@Body() createProductDto: CreateProductDto, @User() user: any) {
     const product = this.productFactory.createProduct(createProductDto, user);
     const createdProduct = await this.productService.create(product);
+    return {
+      success: true,
+      message: message.product.created,
+      data: createdProduct,
+    };
   }
 
   @Get()

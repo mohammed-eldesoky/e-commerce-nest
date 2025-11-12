@@ -4,6 +4,7 @@ import { UpdateBrandDto } from './dto/update-brand.dto';
 import { Brand } from './entities/brand.entity';
 import { BrandRepository } from '@models/index';
 import { message } from '@common/index';
+import { Types } from 'mongoose';
 
 @Injectable()
 export class BrandService {
@@ -14,16 +15,19 @@ export class BrandService {
     if (brandExist) {
       throw new ConflictException(message.Brand.alreadyExist);
     }
-   return await this.brandrepo.create(brand);
-
+    return await this.brandrepo.create(brand);
   }
 
   findAll() {
     return `This action returns all brand`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} brand`;
+  findOne(id: string | Types.ObjectId) {
+    const brandExist = this.brandrepo.getOne({ _id: id });
+    if (!brandExist) {
+      throw new ConflictException(message.Brand.notFound);
+    }
+    return brandExist;
   }
 
   update(id: number, updateBrandDto: UpdateBrandDto) {

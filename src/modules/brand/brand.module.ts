@@ -11,5 +11,6 @@ import { UserMongoModule } from '@shared/index';
   imports: [UserMongoModule,MongooseModule.forFeature([{ name: Brand.name, schema: brandSchema }])],
   controllers: [BrandController],
   providers: [BrandService,BrandFactory,BrandRepository,JwtService],
+  exports:[BrandService,BrandFactory,BrandRepository,JwtService],
 })
 export class BrandModule {}

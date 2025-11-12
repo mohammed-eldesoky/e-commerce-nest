@@ -5,11 +5,28 @@ import { UserMongoModule } from '@shared/index';
 import { ProductFactory } from './factory';
 import { JwtService } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Product, ProductRepository, productSchema } from '@models/index';
+import {
+  Brand,
+  BrandRepository,
+  brandSchema,
+  Category,
+  CategoryRepository,
+  CategorySchema,
+  Product,
+  ProductRepository,
+  productSchema,
+} from '@models/index';
+import { BrandModule } from '@modules/brand/brand.module';
+import { CategoryModule } from '@modules/category/category.module';
 
-
-@Module({imports: [UserMongoModule,MongooseModule.forFeature([{ name: Product.name, schema: productSchema }])],
+@Module({
+  imports: [
+    UserMongoModule,
+    MongooseModule.forFeature([{ name: Product.name, schema: productSchema }]),
+    BrandModule,
+    CategoryModule,
+  ],
   controllers: [ProductController],
-  providers: [ProductService,ProductFactory,JwtService,ProductRepository],
+  providers: [ProductService, ProductFactory, JwtService, ProductRepository],
 })
 export class ProductModule {}
