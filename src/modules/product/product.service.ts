@@ -39,8 +39,14 @@ export class ProductService {
     return `This action returns all product`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} product`;
+  async findOne(id: string) {
+    const productExist = await this.productrepo.getOne({ _id: id });
+    //fail case
+    if (!productExist) {
+      throw new NotFoundException(message.product.notFound);
+    }
+
+    return productExist;
   }
 
   async update(id: string, product: Product) {
