@@ -26,7 +26,7 @@ export class ProductController {
   @Post()
   async create(@Body() createProductDto: CreateProductDto, @User() user: any) {
     const product = this.productFactory.createProduct(createProductDto, user);
-    const createdProduct = await this.productService.create(product);
+    const createdProduct = await this.productService.create(product,user);
     return {
       success: true,
       message: message.product.created,
@@ -46,7 +46,7 @@ export class ProductController {
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateProductDto: UpdateProductDto) {
-    return this.productService.update(+id, updateProductDto);
+    // return this.productService.update(id, updateProductDto);
   }
 
   @Delete(':id')
