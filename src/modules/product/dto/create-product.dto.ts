@@ -1,4 +1,4 @@
-
+import { IsValidDiscount } from '@common/decorators/discount.decorator';
 import { discountType } from '@common/enum';
 import {
   IsArray,
@@ -36,8 +36,7 @@ export class CreateProductDto {
   @IsNotEmpty()
   price: number;
 
-  @IsNumber()
-  @IsOptional()
+  @IsValidDiscount()
   discountAmount: number;
 
   @IsString()

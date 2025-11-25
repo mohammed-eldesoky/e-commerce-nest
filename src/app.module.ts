@@ -9,6 +9,7 @@ import { CategoryModule } from './modules/category/category.module';
 import devConfig from './config/env/dev.config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { CustomerModule } from './modules/customer/customer.module';
+import { CouponModule } from './modules/coupon/coupon.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { CustomerModule } from './modules/customer/customer.module';
     ProductModule,
     CategoryModule,
     CustomerModule,
+    CouponModule,
   ],
   controllers: [AppController],
   providers: [AppService],
