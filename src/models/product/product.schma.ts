@@ -1,10 +1,7 @@
+import { discountType } from '@common/enum';
 import { Prop, Schema, SchemaFactory, Virtual } from '@nestjs/mongoose';
 import { SchemaTypes, Types } from 'mongoose';
 
-export enum discountType {
-  fixed_amount = 'fixed_amount',
-  percentage = 'percentage',
-}
 
 @Schema({
   timestamps: true,

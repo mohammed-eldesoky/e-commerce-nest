@@ -15,3 +15,7 @@ export * from "./brand/brand.schema";
 export * from "./brand/brand.repository";
 export * from "./product/product.schma";
 export * from "./product/product.repository";
+export * from "./coupon/coupon.schema";
+export * from "./coupon/coupon.repository";
+export * from "./token/token.schema";
+export * from "./token/token.repository";

@@ -1,4 +1,5 @@
-import { discountType } from '@models/index';
+
+import { discountType } from '@common/enum';
 import {
   IsArray,
   IsEnum,

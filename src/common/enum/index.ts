@@ -14,3 +14,9 @@ export enum USER_AGENT{
     access="access",
     refresh="refresh"
  }
+
+ 
+ export enum discountType {
+   fixed_amount = 'fixed_amount',
+   percentage = 'percentage',
+ }
