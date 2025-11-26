@@ -1,3 +1,4 @@
+import { IsValidToDate } from '@common/decorators/date.decorator';
 import { IsValidDiscount } from '@common/decorators/discount.decorator';
 import { discountType } from '@common/enum';
 import {
@@ -31,7 +32,7 @@ export class CreateCouponDto {
   fromtDate: Date;
 
   @IsDate()
-  @MinDate(new Date(Date.now() - 24 * 60 * 60 * 1000)) // current date - 1 day
+  @IsValidToDate()
   toDate: Date;
 
   @IsBoolean()
