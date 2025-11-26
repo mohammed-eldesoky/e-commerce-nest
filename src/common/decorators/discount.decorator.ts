@@ -1,9 +1,5 @@
-import { discountType } from '@common/enum';
-import {
-  registerDecorator,
-  ValidationOptions,
-  ValidationArguments,
-} from 'class-validator';
+import { discountType } from "@common/enum";
+import { registerDecorator, ValidationArguments, ValidationOptions } from "class-validator";
 
 export function IsValidDiscount(validationOptions?: ValidationOptions) {
   return function (object: Object, propertyName: string) {
@@ -15,27 +11,32 @@ export function IsValidDiscount(validationOptions?: ValidationOptions) {
       validator: {
         validate(value: any, args: ValidationArguments) {
           const obj = args.object as any;
-          const { DiscountType } = obj;
-          if (DiscountType === discountType.percentage) {
+          const discountTypeValue = obj.discountType;
+
+          if (discountTypeValue === discountType.percentage) {
             return typeof value === 'number' && value > 0 && value <= 100;
           }
 
-          if (DiscountType === discountType.fixed_amount) {
+          if (discountTypeValue === discountType.fixed_amount) {
             return typeof value === 'number' && value >= 0;
           }
-          return true;
+
+          return false; // important!
         },
+
         defaultMessage(args: ValidationArguments) {
           const obj = args.object as any;
-          const { DiscountType } = obj;
-          if (DiscountType === discountType.percentage) {
+          const discountTypeValue = obj.discountType;
+
+          if (discountTypeValue === discountType.percentage) {
             return 'Discount amount cannot exceed 100 when discount type is percentage';
           }
 
-          if (DiscountType === discountType.fixed_amount) {
+          if (discountTypeValue === discountType.fixed_amount) {
             return 'Discount amount must be a valid positive number';
           }
-          return 'Invalid Discount Amount';
+
+          return 'Invalid discount type';
         },
       },
     });
