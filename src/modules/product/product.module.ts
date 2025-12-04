@@ -28,5 +28,6 @@ import { CategoryModule } from '@modules/category/category.module';
   ],
   controllers: [ProductController],
   providers: [ProductService, ProductFactory, JwtService, ProductRepository],
+  exports: [ProductService],
 })
 export class ProductModule {}
