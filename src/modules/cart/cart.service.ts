@@ -4,6 +4,7 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { CartRepository, ProductRepository } from '@models/index';
 import { ProductService } from '@modules/product/product.service';
 import { message } from '@common/index';
+import { AwsClient } from 'google-auth-library';
 
 @Injectable()
 export class CartService {
@@ -62,9 +63,17 @@ export class CartService {
       { userId: user._id, 'products.productId': productId }, //
       { $pull: { products: { productId } } },
     );
-    if (!product) 
-      throw new NotFoundException(message.cart.notFound);
+    if (!product) throw new NotFoundException(message.cart.notFound);
 
     return true;
+  }
+
+  async clearCart(user: any) {
+    return await this.cartRepository.update(
+      { userId: user._id },
+      {
+        products: [],
+      },
+    );
   }
 }
