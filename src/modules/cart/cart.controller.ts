@@ -24,8 +24,8 @@ export class CartController {
     const cart = await this.cartService.addToCart(createCartDto, user);
     return {
       success: true,
-      message: 'Product added to cart successfully',
-      data: message.cart.updated,
+      message:  message.cart.updated,
+      data: cart,
     };
   }
 

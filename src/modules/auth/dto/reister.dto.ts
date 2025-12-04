@@ -1,13 +1,20 @@
-import { USER_AGENT } from "@common/enum";
-import { IsDate, IsEmail, IsNotEmpty, IsOptional, IsString, MaxLength, MinLength } from "class-validator";
-
+import { USER_AGENT } from '@common/enum';
+import { Type } from 'class-transformer';
+import {
+  IsDate,
+  IsEmail,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  MaxLength,
+  MinLength,
+} from 'class-validator';
 
 export class RegisterDto {
- @IsString()
- @IsNotEmpty()
- @MinLength(3)
- @MaxLength(20)
-
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(3)
+  @MaxLength(20)
   userName: string;
 
   @IsEmail()
@@ -15,10 +22,11 @@ export class RegisterDto {
   email: string;
 
   @IsString()
- @IsNotEmpty()
-
+  @IsNotEmpty()
+  @MinLength(8)
   password: string;
-@IsDate()
+  @Type(() => Date)
+  @IsDate()
   @IsNotEmpty()
   dob: Date;
 
@@ -26,8 +34,7 @@ export class RegisterDto {
   @IsNotEmpty()
   gender: string;
 
-    @IsString()
+  @IsString()
   @IsOptional()
-  userAgent?: string = USER_AGENT.local; 
-  
+  userAgent?: string = USER_AGENT.local;
 }

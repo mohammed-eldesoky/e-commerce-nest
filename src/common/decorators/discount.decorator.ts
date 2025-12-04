@@ -11,7 +11,7 @@ export function IsValidDiscount(validationOptions?: ValidationOptions) {
       validator: {
         validate(value: any, args: ValidationArguments) {
           const obj = args.object as any;
-          const discountTypeValue = obj.discountType;
+          const discountTypeValue = obj.disCountType;
 
           if (discountTypeValue === discountType.percentage) {
             return typeof value === 'number' && value > 0 && value <= 100;
@@ -26,7 +26,7 @@ export function IsValidDiscount(validationOptions?: ValidationOptions) {
 
         defaultMessage(args: ValidationArguments) {
           const obj = args.object as any;
-          const discountTypeValue = obj.discountType;
+          const discountTypeValue = obj.disCountType;
 
           if (discountTypeValue === discountType.percentage) {
             return 'Discount amount cannot exceed 100 when discount type is percentage';
