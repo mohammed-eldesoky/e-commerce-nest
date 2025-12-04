@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  Put,
 } from '@nestjs/common';
 import { CartService } from './cart.service';
 import { AddToCartDto } from './dto/create-cart.dto';
@@ -28,8 +29,13 @@ export class CartController {
     };
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.cartService.remove(+id);
+  @Put('/:productId')
+  async removeFromCart(@Param('productId') productId: string, @User() user: any) {
+    await this.cartService.removeFromCart(productId, user);
+   return{
+      success: true,
+      message: message.cart.updated,
+
+   }
   }
 }

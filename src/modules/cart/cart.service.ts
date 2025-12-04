@@ -57,7 +57,14 @@ export class CartService {
     return cart;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} cart`;
+  async removeFromCart(productId: string, user: any) {
+    const product = await this.cartRepository.update(
+      { userId: user._id, 'products.productId': productId }, //
+      { $pull: { products: { productId } } },
+    );
+    if (!product) 
+      throw new NotFoundException(message.cart.notFound);
+
+    return true;
   }
 }

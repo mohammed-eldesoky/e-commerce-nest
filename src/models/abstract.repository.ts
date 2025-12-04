@@ -48,7 +48,7 @@ export class AbstractRepository<T> {
     update?: UpdateQuery<T>,
     option?: QueryOptions<T>
   ) {
-    await this.model.findOneAndUpdate(filter, update, option);
+   return await this.model.findOneAndUpdate(filter, update, option);
   }
   //________________________________________________________
   async delete(filter: RootFilterQuery<T>) {
