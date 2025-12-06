@@ -30,3 +30,6 @@ export * from './token/token.repository';
 
 export * from './cart/cart.repository';
 export * from './cart/cart.schema';
+
+export * from './order/order.schema';
+export * from './order/order.repository';
