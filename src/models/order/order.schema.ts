@@ -35,11 +35,13 @@ export class OrderProduct {
 }
 
 @Schema()
-export class CopounDetails {
+export class CopounDetail {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Coupon', required: true })
   couponId: Types.ObjectId;
   @Prop({ type: Number, required: true })
   discountAmount: number;
+  @Prop({ type: String, required: true })
+  code: string;
 }
 
 @Schema({ timestamps: true })
@@ -66,8 +68,8 @@ export class Order {
     },
   })
   status: ORDER_STATUS;
-  @Prop({ type: CopounDetails })
-  coupon: CopounDetails;
+  @Prop({ type: CopounDetail })
+  coupon: CopounDetail;
   @Prop({ type: Number, required: true })
   totalAmount: number;
 }

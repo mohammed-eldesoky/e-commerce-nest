@@ -11,6 +11,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { CustomerModule } from './modules/customer/customer.module';
 import { CouponModule } from './modules/coupon/coupon.module';
 import { CartModule } from './modules/cart/cart.module';
+import { OrderModule } from './modules/order/order.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CartModule } from './modules/cart/cart.module';
     CustomerModule,
     CouponModule,
     CartModule,
+    OrderModule,
   ],
   controllers: [AppController],
   providers: [AppService],
