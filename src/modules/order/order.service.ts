@@ -57,11 +57,8 @@ export class OrderService {
       });
     }
     if (failProducts.length > 0) {
-      return {
-        success: false,
-        message: 'Some products are not available',
-        failProducts,
-      };
+    
+     return failProducts;
     }
     // CREATE ORDER
     const order = await this.orderRepository.create({

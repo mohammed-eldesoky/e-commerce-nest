@@ -3,6 +3,7 @@ import {
   Catch,
   ArgumentsHost,
   HttpStatus,
+  HttpException,
 } from '@nestjs/common';
 import { Error as MongooseError, mongo } from 'mongoose';
 
@@ -12,11 +13,18 @@ export class MongooseExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
 
+    //1- if it's already an HttpException, just pass it through
+    if (exception instanceof HttpException) {
+      const status = exception.getStatus();
+      const res = exception.getResponse();
+      return response.status(status).json(res);
+    }
+
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
     let message = 'Internal server error';
     let errors: any = [];
 
-    //  Mongoose Validation Error
+    //  2. Mongoose Validation Error
     if (exception instanceof MongooseError.ValidationError) {
       status = HttpStatus.BAD_REQUEST;
       message = 'Validation failed';
@@ -26,14 +34,17 @@ export class MongooseExceptionFilter implements ExceptionFilter {
       }));
     }
 
-    //  Invalid ObjectId or wrong field type
+    //  3. Invalid ObjectId
     else if (exception instanceof MongooseError.CastError) {
       status = HttpStatus.BAD_REQUEST;
       message = `Invalid value for ${exception.path}: ${exception.value}`;
     }
 
-    //  Duplicate key error (email already exists)
-    else if (exception instanceof mongo.MongoServerError && exception.code === 11000) {
+    //  4. Duplicate key
+    else if (
+      exception instanceof mongo.MongoServerError &&
+      exception.code === 11000
+    ) {
       status = HttpStatus.CONFLICT;
       message = 'Duplicate key error';
       const field = Object.keys(exception.keyValue)[0];
@@ -45,15 +56,15 @@ export class MongooseExceptionFilter implements ExceptionFilter {
       ];
     }
 
-    //  Other known Mongoose error
+    //  5. Other known Mongoose errors
     else if (exception instanceof MongooseError) {
       status = HttpStatus.BAD_REQUEST;
       message = exception.message;
     }
 
-    //  Unknown error (log it for debugging)
+    //  6. Unknown errors
     else {
-      console.error(' Unknown Error:', exception);
+      console.error('Unknown Error:', exception);
       message = exception.message || message;
     }
 

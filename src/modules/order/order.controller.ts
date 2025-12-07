@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  HttpException,
 } from '@nestjs/common';
 import { OrderService } from './order.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -22,7 +23,7 @@ export class OrderController {
   async create(@Body() createOrderDto: CreateOrderDto, @User() user: any) {
     const result = await this.orderService.create(createOrderDto, user);
     if (result instanceof Array) {
-      return { success: false, message: 'Order Failed ', data: result };
+    throw new HttpException({success: false, message: 'Order Failed', failProducts : result}, 400);
     }
     return {
       success: true,
