@@ -76,4 +76,10 @@ export class CartService {
       },
     );
   }
+
+  async findOne(user: any) {
+    const cart = await this.cartRepository.getOne({ userId: user._id });
+    if (!cart) throw new NotFoundException(message.cart.notFound);
+    return cart;
+  }
 }
